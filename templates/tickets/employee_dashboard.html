@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - GPI Ticketing{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">My Dashboard</h3>
+    <a href="{% url 'ticket_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> New Ticket
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Total</div>
+                <div class="fs-3 fw-bold">{{ stats.total }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100 border-primary">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Created</div>
+                <div class="fs-3 fw-bold text-primary">{{ stats.created }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100 border-warning">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Assigned</div>
+                <div class="fs-3 fw-bold text-warning">{{ stats.assigned }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100 border-info">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Resolved</div>
+                <div class="fs-3 fw-bold text-info">{{ stats.resolved }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100 border-success">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Closed</div>
+                <div class="fs-3 fw-bold text-success">{{ stats.closed }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100 border-secondary">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Cancelled</div>
+                <div class="fs-3 fw-bold text-secondary">{{ stats.cancelled }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-6">
+                <input type="text" id="ticketSearch" class="form-control"
+                       placeholder="Search by reference, problem type or description...">
+            </div>
+            <div class="col-md-4">
+                <select id="statusFilter" class="form-select">
+                    <option value="">All statuses</option>
+                    <option value="CREATED">Created</option>
+                    <option value="ASSIGNED">Assigned</option>
+                    <option value="RESOLVED">Resolved</option>
+                    <option value="CLOSED">Closed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-2 text-md-end">
+                <span class="text-muted small" id="ticketCount">{{ tickets|length }} ticket(s)</span>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="ticketsTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Reference</th>
+                    <th>Problem type</th>
+                    <th>Status</th>
+                    <th>Responsible admin</th>
+                    <th>Assigned to</th>
+                    <th>Created</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr data-status="{{ ticket.status }}"
+                    data-search="{{ ticket.reference|lower }} {{ ticket.problem_type.label|lower }} {{ ticket.description|default:''|lower }}">
+                    <td>
+                        <a href="{% url 'ticket_detail' ticket.pk %}" class="fw-semibold text-decoration-none">
+                            {{ ticket.reference }}
+                        </a>
+                    </td>
+                    <td>{{ ticket.problem_type.label }}</td>
+                    <td>{% include "tickets/_status_badge.html" with status=ticket.status %}</td>
+                    <td>{{ ticket.responsible_admin.get_username }}</td>
+                    <td>{{ ticket.assigned_to.get_username|default:"—" }}</td>
+                    <td>{{ ticket.created_at|date:"d M Y H:i" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'ticket_detail' ticket.pk %}" class="btn btn-sm btn-outline-secondary" title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        {% if ticket.status == 'CREATED' %}
+                        <a href="{% url 'ticket_edit' ticket.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" title="Cancel"
+                                data-bs-toggle="modal" data-bs-target="#cancelModal"
+                                data-cancel-url="{% url 'ticket_cancel' ticket.pk %}"
+                                data-ticket-reference="{{ ticket.reference }}">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        You haven't created any tickets yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include "tickets/_cancel_modal.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('ticketSearch');
+    const statusFilter = document.getElementById('statusFilter');
+    const rows = document.querySelectorAll('#ticketsTable tbody tr[data-status]');
+    const ticketCount = document.getElementById('ticketCount');
+
+    function applyFilters() {
+        const search = searchInput.value.trim().toLowerCase();
+        const status = statusFilter.value;
+        let visible = 0;
+
+        rows.forEach(function (row) {
+            const matchesSearch = !search || row.dataset.search.includes(search);
+            const matchesStatus = !status || row.dataset.status === status;
+            const show = matchesSearch && matchesStatus;
+            row.style.display = show ? '' : 'none';
+            if (show) visible += 1;
+        });
+
+        ticketCount.textContent = visible + ' ticket(s)';
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    statusFilter.addEventListener('change', applyFilters);
+
+    const cancelModal = document.getElementById('cancelModal');
+    if (cancelModal) {
+        cancelModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const cancelUrl = button.getAttribute('data-cancel-url');
+            const reference = button.getAttribute('data-ticket-reference');
+            cancelModal.querySelector('#cancelForm').setAttribute('action', cancelUrl);
+            cancelModal.querySelector('#cancelTicketReference').textContent = reference;
+        });
+    }
+});
+</script>
+{% endblock %}

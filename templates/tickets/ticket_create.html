@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}New Ticket - GPI Ticketing{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Create a new ticket</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">
+                    Choose the problem you are experiencing. The category and the
+                    responsible IT admin will be assigned automatically.
+                </p>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.problem_type.id_for_label }}" class="form-label">
+                            Problem type
+                        </label>
+                        {{ form.problem_type }}
+                        {% if form.problem_type.errors %}
+                            <div class="text-danger small mt-1">{{ form.problem_type.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            {{ form.description.label }}
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small mt-1">{{ form.description.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'employee_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Submit ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

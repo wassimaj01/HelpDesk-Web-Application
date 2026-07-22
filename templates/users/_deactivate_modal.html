@@ -1,0 +1,29 @@
+{% comment %}
+Shared deactivate/reactivate confirmation modal for the user management
+dashboard and detail page. A trigger button must set these attributes:
+    data-bs-toggle="modal" data-bs-target="#deactivateModal"
+    data-deactivate-url="{% url 'user_deactivate' target_user.pk %}"
+    data-username="{{ target_user.username }}"
+    data-active="{{ target_user.is_active|yesno:'true,false' }}"
+{% endcomment %}
+<div class="modal fade" id="deactivateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deactivateForm" method="post" action="">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deactivateModalTitle">Deactivate user</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure about <strong id="deactivateUsername"></strong>?</p>
+                    <p class="text-muted small" id="deactivateModalBody"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger" id="deactivateConfirmBtn">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -14,8 +14,24 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.contrib.auth import views as auth_views
+from django.urls import include, path
+from django.views.generic import RedirectView
+
+from tickets.views import logout_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', RedirectView.as_view(pattern_name='dashboard', permanent=False)),
+    path(
+        'accounts/login/',
+        auth_views.LoginView.as_view(template_name='registration/login.html'),
+        name='login',
+    ),
+    path('accounts/logout/', logout_view, name='logout'),
+    # User management (moved to the users app)
+    path('users/', include('users.urls')),
+    # Ticket app
+    path('', include('tickets.urls')),
 ]
+

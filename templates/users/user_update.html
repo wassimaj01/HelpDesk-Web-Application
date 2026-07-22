@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User - GPI Ticketing{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Edit user: {{ target_user.username }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">First name</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Last name</label>
+                            {{ form.last_name }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small">{{ form.email.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.role.id_for_label }}" class="form-label">Role</label>
+                            {{ form.role }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.lieu_service.id_for_label }}" class="form-label">Location / Service</label>
+                            {{ form.lieu_service }}
+                            {% if form.lieu_service.errors %}
+                                <div class="text-danger small">{{ form.lieu_service.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">Phone</label>
+                            {{ form.phone }}
+                        </div>
+
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save changes
+                        </button>
+                        <a href="{% url 'user_detail' target_user.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+                <p class="text-muted small mb-0">
+                    Password changes are not available from this form. Use the Django admin
+                    to reset a user's password if needed.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Validate Resolution - {{ ticket.reference }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Validate Resolution for {{ ticket.reference }}</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-4">
+                    <dt class="col-sm-4">Employee</dt>
+                    <dd class="col-sm-8">{{ ticket.created_by.get_username }}</dd>
+                    <dt class="col-sm-4">Problem type</dt>
+                    <dd class="col-sm-8">{{ ticket.problem_type.label }}</dd>
+                    <dt class="col-sm-4">Resolved by</dt>
+                    <dd class="col-sm-8">{{ ticket.resolved_by.get_username|default:"—" }}</dd>
+                    <dt class="col-sm-4">Resolved at</dt>
+                    <dd class="col-sm-8">{{ ticket.resolved_at|date:"d M Y H:i"|default:"—" }}</dd>
+                </dl>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label d-block">{{ form.decision.label }}</label>
+                        {% for radio in form.decision %}
+                            <div class="form-check">
+                                {{ radio.tag }}
+                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                        {% if form.decision.errors %}
+                            <div class="text-danger small">{{ form.decision.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.operator.id_for_label }}" class="form-label">{{ form.operator.label }}</label>
+                        {{ form.operator }}
+                        {% if form.operator.errors %}
+                            <div class="text-danger small">{{ form.operator.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.comment.id_for_label }}" class="form-label">{{ form.comment.label }}</label>
+                        {{ form.comment }}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check2-square"></i> Submit decision
+                        </button>
+                        <a href="{% url 'it_admin_ticket_detail' ticket.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

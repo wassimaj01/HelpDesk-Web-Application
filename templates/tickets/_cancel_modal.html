@@ -1,0 +1,35 @@
+{% comment %}
+Shared cancel-confirmation modal. A trigger button must set these
+data attributes:
+    data-bs-toggle="modal" data-bs-target="#cancelModal"
+    data-cancel-url="{% url 'ticket_cancel' ticket.pk %}"
+    data-ticket-reference="{{ ticket.reference }}"
+{% endcomment %}
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="cancelForm" method="post" action="">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Cancel ticket</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel ticket <strong id="cancelTicketReference"></strong>?</p>
+                    <p class="text-muted small">
+                        This action cannot be undone through the employee interface. The ticket
+                        will be marked as <strong>CANCELLED</strong> and kept in your history.
+                    </p>
+                    <div class="mb-2">
+                        <label for="cancelReason" class="form-label">Reason (optional)</label>
+                        <textarea name="reason" id="cancelReason" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Yes, cancel ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

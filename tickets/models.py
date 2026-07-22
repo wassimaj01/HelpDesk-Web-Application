@@ -109,6 +109,7 @@ class Ticket(models.Model):
         ASSIGNED = 'ASSIGNED', 'Assigned'
         RESOLVED = 'RESOLVED', 'Resolved'
         CLOSED = 'CLOSED', 'Closed'
+        CANCELLED = 'CANCELLED', 'Cancelled'
 
     class ValidationDecision(models.TextChoices):
         PENDING = 'PENDING', 'Pending'
@@ -194,6 +195,106 @@ class Ticket(models.Model):
     # ------------------------------------------------------------------
     # Business methods / workflow transitions
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def _generate_reference():
+        """Generate a unique, human-readable ticket reference (e.g. TCK-9F3A2B1C4D)."""
+        import uuid
+
+        return f'TCK-{uuid.uuid4().hex[:10].upper()}'
+
+    @classmethod
+    def create_for_employee(cls, employee, problem_type, description=None):
+        """Create a ticket on behalf of an employee.
+
+        category and responsible_admin are derived from problem_type.
+        requester_lieu_service is derived from the employee's profile.
+        Creates TICKET_CREATED and TICKET_ROUTED history entries.
+        """
+        profile = getattr(employee, 'profile', None)
+        if profile is None:
+            raise ValueError('The employee has no associated profile / lieu_service.')
+
+        reference = cls._generate_reference()
+        while cls.objects.filter(reference=reference).exists():
+            reference = cls._generate_reference()
+
+        ticket = cls.objects.create(
+            reference=reference,
+            problem_type=problem_type,
+            description=description,
+            category=problem_type.category,
+            status=cls.Status.CREATED,
+            created_by=employee,
+            requester_lieu_service=profile.lieu_service,
+            responsible_admin=problem_type.responsible_admin,
+        )
+
+        TicketHistory.objects.create(
+            ticket=ticket,
+            action=TicketHistory.Action.TICKET_CREATED,
+            new_status=ticket.status,
+            changed_by=employee,
+        )
+        TicketHistory.objects.create(
+            ticket=ticket,
+            action=TicketHistory.Action.TICKET_ROUTED,
+            old_status=ticket.status,
+            new_status=ticket.status,
+            new_assigned_to=None,
+            changed_by=employee,
+            comment=(
+                f'Routed to {problem_type.responsible_admin} based on problem type '
+                f'"{problem_type.label}".'
+            ),
+        )
+        return ticket
+
+    def update_description(self, employee, comment=None):
+        """Record a TICKET_UPDATED history entry after the employee edits a
+        CREATED ticket's description. The caller is responsible for saving
+        the updated field(s) beforehand.
+        """
+        if employee.pk != self.created_by_id:
+            raise PermissionError('Only the ticket creator can update this ticket.')
+
+        if self.status != self.Status.CREATED:
+            raise ValueError(f'Cannot update ticket from status {self.status}.')
+
+        TicketHistory.objects.create(
+            ticket=self,
+            action=TicketHistory.Action.TICKET_UPDATED,
+            old_status=self.status,
+            new_status=self.status,
+            changed_by=employee,
+            comment=comment,
+        )
+        return self
+
+    def cancel(self, employee, comment=None):
+        """Employee cancels their own ticket. Only valid from CREATED status.
+
+        Cancelling never deletes the ticket; it moves status to CANCELLED.
+        """
+        if employee.pk != self.created_by_id:
+            raise PermissionError('Only the ticket creator can cancel this ticket.')
+
+        if self.status != self.Status.CREATED:
+            raise ValueError(f'Cannot cancel ticket from status {self.status}.')
+
+        old_status = self.status
+        self.status = self.Status.CANCELLED
+        self.save()
+
+        TicketHistory.objects.create(
+            ticket=self,
+            action=TicketHistory.Action.TICKET_CANCELLED,
+            old_status=old_status,
+            new_status=self.status,
+            changed_by=employee,
+            comment=comment,
+        )
+        return self
 
     def assign_to_operator(self, operator, admin_user, comment=None):
         """Responsible admin assigns (or reassigns) the ticket to an operator.
@@ -336,13 +437,16 @@ class TicketHistory(models.Model):
     class Action(models.TextChoices):
         TICKET_CREATED = 'TICKET_CREATED', 'Ticket created'
         TICKET_ROUTED = 'TICKET_ROUTED', 'Ticket routed'
+        TICKET_UPDATED = 'TICKET_UPDATED', 'Ticket updated'
         TICKET_ASSIGNED = 'TICKET_ASSIGNED', 'Ticket assigned'
         TICKET_REASSIGNED = 'TICKET_REASSIGNED', 'Ticket reassigned'
         TICKET_RESOLVED = 'TICKET_RESOLVED', 'Ticket resolved'
         RESOLUTION_ACCEPTED = 'RESOLUTION_ACCEPTED', 'Resolution accepted'
         RESOLUTION_REFUSED = 'RESOLUTION_REFUSED', 'Resolution refused'
         TICKET_CLOSED = 'TICKET_CLOSED', 'Ticket closed'
+        TICKET_CANCELLED = 'TICKET_CANCELLED', 'Ticket cancelled'
         COMMENT_ADDED = 'COMMENT_ADDED', 'Comment added'
+        OPERATOR_RETURNED = 'OPERATOR_RETURNED', 'Operator returned'
 
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='history')
     action = models.CharField(max_length=30, choices=Action.choices)

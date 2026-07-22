@@ -1,0 +1,12 @@
+{% comment %}
+Usage: {% include "tickets/_status_badge.html" with status=ticket.status %}
+{% endcomment %}
+<span class="badge rounded-pill
+    {% if status == 'CREATED' %}bg-primary
+    {% elif status == 'ASSIGNED' %}bg-warning text-dark
+    {% elif status == 'RESOLVED' %}bg-info text-dark
+    {% elif status == 'CLOSED' %}bg-success
+    {% elif status == 'CANCELLED' %}bg-secondary
+    {% else %}bg-light text-dark{% endif %}">
+    {{ status }}
+</span>

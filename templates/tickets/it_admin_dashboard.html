@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}IT Admin Dashboard - GPI Ticketing{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">Tickets Routed To Me</h3>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Total</div>
+                <div class="fs-3 fw-bold">{{ stats.total }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100 border-primary">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Created</div>
+                <div class="fs-3 fw-bold text-primary">{{ stats.created }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100 border-warning">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Assigned</div>
+                <div class="fs-3 fw-bold text-warning">{{ stats.assigned }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100 border-info">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Resolved (pending)</div>
+                <div class="fs-3 fw-bold text-info">{{ stats.resolved }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm h-100 border-success">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Closed</div>
+                <div class="fs-3 fw-bold text-success">{{ stats.closed }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-6">
+                <input type="text" id="ticketSearch" class="form-control"
+                       placeholder="Search by reference, employee or problem type...">
+            </div>
+            <div class="col-md-4">
+                <select id="statusFilter" class="form-select">
+                    <option value="">All statuses</option>
+                    <option value="CREATED">Created</option>
+                    <option value="ASSIGNED">Assigned</option>
+                    <option value="RESOLVED">Resolved</option>
+                    <option value="CLOSED">Closed</option>
+                </select>
+            </div>
+            <div class="col-md-2 text-md-end">
+                <span class="text-muted small" id="ticketCount">{{ tickets|length }} ticket(s)</span>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="ticketsTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Reference</th>
+                    <th>Employee</th>
+                    <th>Problem type</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Assigned operator</th>
+                    <th>Created</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr data-status="{{ ticket.status }}"
+                    data-search="{{ ticket.reference|lower }} {{ ticket.created_by.get_username|lower }} {{ ticket.problem_type.label|lower }}">
+                    <td>
+                        <a href="{% url 'it_admin_ticket_detail' ticket.pk %}" class="fw-semibold text-decoration-none">
+                            {{ ticket.reference }}
+                        </a>
+                    </td>
+                    <td>{{ ticket.created_by.get_username }}</td>
+                    <td>{{ ticket.problem_type.label }}</td>
+                    <td>{{ ticket.get_category_display }}</td>
+                    <td>{% include "tickets/_status_badge.html" with status=ticket.status %}</td>
+                    <td>{{ ticket.assigned_to.get_username|default:"—" }}</td>
+                    <td>{{ ticket.created_at|date:"d M Y H:i" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'it_admin_ticket_detail' ticket.pk %}" class="btn btn-sm btn-outline-secondary" title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        {% if ticket.status == 'CREATED' %}
+                        <a href="{% url 'it_admin_assign_ticket' ticket.pk %}" class="btn btn-sm btn-outline-primary" title="Assign">
+                            <i class="bi bi-person-check"></i> Assign
+                        </a>
+                        {% elif ticket.status == 'ASSIGNED' %}
+                        <a href="{% url 'it_admin_assign_ticket' ticket.pk %}" class="btn btn-sm btn-outline-warning" title="Reassign">
+                            <i class="bi bi-arrow-repeat"></i> Reassign
+                        </a>
+                        {% elif ticket.status == 'RESOLVED' %}
+                        <a href="{% url 'it_admin_validate_resolution' ticket.pk %}" class="btn btn-sm btn-outline-info" title="Validate">
+                            <i class="bi bi-check2-square"></i> Validate
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'it_admin_delete_ticket' ticket.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        No tickets have been routed to you yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('ticketSearch');
+    const statusFilter = document.getElementById('statusFilter');
+    const rows = document.querySelectorAll('#ticketsTable tbody tr[data-status]');
+    const ticketCount = document.getElementById('ticketCount');
+
+    function applyFilters() {
+        const search = searchInput.value.trim().toLowerCase();
+        const status = statusFilter.value;
+        let visible = 0;
+
+        rows.forEach(function (row) {
+            const matchesSearch = !search || row.dataset.search.includes(search);
+            const matchesStatus = !status || row.dataset.status === status;
+            const show = matchesSearch && matchesStatus;
+            row.style.display = show ? '' : 'none';
+            if (show) visible += 1;
+        });
+
+        ticketCount.textContent = visible + ' ticket(s)';
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    statusFilter.addEventListener('change', applyFilters);
+});
+</script>
+{% endblock %}

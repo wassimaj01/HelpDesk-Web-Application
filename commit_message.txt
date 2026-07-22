@@ -1,9 +1,0 @@
-﻿Initial Django foundation for GPI ticketing system
-
-Add Lieu, Service, LieuService, UserProfile, ProblemType, Ticket and
-TicketHistory models with ticket workflow business methods, Django
-admin configuration, PostgreSQL settings via python-decouple, and a
-seed_demo_data management command with demo groups, users, and
-sample tickets.
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>

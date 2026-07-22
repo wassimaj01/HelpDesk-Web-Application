@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Resolve Ticket {{ ticket.reference }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Mark Ticket {{ ticket.reference }} as Resolved</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-4">
+                    <dt class="col-sm-4">Employee</dt>
+                    <dd class="col-sm-8">{{ ticket.created_by.get_username }}</dd>
+                    <dt class="col-sm-4">Problem type</dt>
+                    <dd class="col-sm-8">{{ ticket.problem_type.label }}</dd>
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">{{ ticket.description|default:"—"|linebreaksbr }}</dd>
+                </dl>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.comment.id_for_label }}" class="form-label">{{ form.comment.label }}</label>
+                        {{ form.comment }}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-lg"></i> Confirm resolution
+                        </button>
+                        <a href="{% url 'operator_ticket_detail' ticket.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
