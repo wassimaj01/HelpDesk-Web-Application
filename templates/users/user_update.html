@@ -36,10 +36,17 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="{{ form.lieu_service.id_for_label }}" class="form-label">Location / Service</label>
-                            {{ form.lieu_service }}
-                            {% if form.lieu_service.errors %}
-                                <div class="text-danger small">{{ form.lieu_service.errors|join:", " }}</div>
+                            <label for="{{ form.lieu.id_for_label }}" class="form-label">Lieu</label>
+                            {{ form.lieu }}
+                            {% if form.lieu.errors %}
+                                <div class="text-danger small">{{ form.lieu.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.service.id_for_label }}" class="form-label">Service</label>
+                            {{ form.service }}
+                            {% if form.service.errors %}
+                                <div class="text-danger small">{{ form.service.errors|join:", " }}</div>
                             {% endif %}
                         </div>
                         <div class="col-md-6">
@@ -74,4 +81,48 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const lieuSelect = document.getElementById('{{ form.lieu.id_for_label }}');
+    const serviceSelect = document.getElementById('{{ form.service.id_for_label }}');
+    const currentService = '{{ form.initial.service|default:"" }}';
+
+    function clearServices() {
+        serviceSelect.innerHTML = '<option value="">-- Select service --</option>';
+    }
+
+    async function loadServices(lieuId) {
+        clearServices();
+        if (!lieuId) return;
+        try {
+            const resp = await fetch(`/users/ajax/services-by-lieu/${lieuId}/`);
+            if (!resp.ok) throw new Error('Network response was not ok');
+            const data = await resp.json();
+            data.forEach(function (s) {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.textContent = s.name;
+                if (String(s.id) === String(currentService)) opt.selected = true;
+                serviceSelect.appendChild(opt);
+            });
+        } catch (err) {
+            console.error('Could not load services:', err);
+        }
+    }
+
+    if (lieuSelect) {
+        lieuSelect.addEventListener('change', function (e) {
+            loadServices(e.target.value);
+        });
+        // If a lieu is preselected, trigger loading
+        if (lieuSelect.value) {
+            loadServices(lieuSelect.value);
+        }
+    }
+});
+</script>
 {% endblock %}
