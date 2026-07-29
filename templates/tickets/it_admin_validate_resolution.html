@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Validate Resolution - {{ ticket.reference }}{% endblock %}
+{% block title %}Valider la résolution - {{ ticket.reference }}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-7">
         <div class="card shadow-sm">
             <div class="card-header bg-white">
-                <h5 class="mb-0">Validate Resolution for {{ ticket.reference }}</h5>
+                <h5 class="mb-0">Valider la résolution pour {{ ticket.reference }}</h5>
             </div>
             <div class="card-body">
                 <dl class="row mb-4">
-                    <dt class="col-sm-4">Employee</dt>
+                    <dt class="col-sm-4">Employé</dt>
                     <dd class="col-sm-8">{{ ticket.created_by.get_username }}</dd>
-                    <dt class="col-sm-4">Problem type</dt>
+                    <dt class="col-sm-4">Type de problème</dt>
                     <dd class="col-sm-8">{{ ticket.problem_type.label }}</dd>
-                    <dt class="col-sm-4">Resolved by</dt>
+                    <dt class="col-sm-4">Résolu par</dt>
                     <dd class="col-sm-8">{{ ticket.resolved_by.get_username|default:"—" }}</dd>
-                    <dt class="col-sm-4">Resolved at</dt>
+                    <dt class="col-sm-4">Résolu le</dt>
                     <dd class="col-sm-8">{{ ticket.resolved_at|date:"d M Y H:i"|default:"—" }}</dd>
                 </dl>
 
@@ -48,9 +48,9 @@
                     </div>
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check2-square"></i> Submit decision
+                            <i class="bi bi-check2-square"></i> Soumettre la décision
                         </button>
-                        <a href="{% url 'it_admin_ticket_detail' ticket.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                        <a href="{% url 'it_admin_ticket_detail' ticket.pk %}" class="btn btn-outline-secondary">Annuler</a>
                     </div>
                 </form>
             </div>

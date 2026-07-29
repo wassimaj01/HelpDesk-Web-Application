@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Create User - GPI Ticketing{% endblock %}
+{% block title %}Créer un utilisateur - GPI Ticketing{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card shadow-sm">
             <div class="card-header bg-white">
-                <h5 class="mb-0">Create a new user</h5>
+                <h5 class="mb-0">Créer un nouvel utilisateur</h5>
             </div>
             <div class="card-body">
                 <form method="post" novalidate>
@@ -15,14 +15,14 @@
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                            <label for="{{ form.username.id_for_label }}" class="form-label">Nom d'utilisateur</label>
                             {{ form.username }}
                             {% if form.username.errors %}
                                 <div class="text-danger small">{{ form.username.errors|join:", " }}</div>
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                            <label for="{{ form.email.id_for_label }}" class="form-label">E-mail</label>
                             {{ form.email }}
                             {% if form.email.errors %}
                                 <div class="text-danger small">{{ form.email.errors|join:", " }}</div>
@@ -30,20 +30,20 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="{{ form.first_name.id_for_label }}" class="form-label">First name</label>
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">Prénom</label>
                             {{ form.first_name }}
                         </div>
                         <div class="col-md-6">
-                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Last name</label>
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Nom</label>
                             {{ form.last_name }}
                         </div>
 
                         <div class="col-md-6">
-                            <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                            <label for="{{ form.password.id_for_label }}" class="form-label">Mot de passe</label>
                             {{ form.password }}
                         </div>
                         <div class="col-md-6">
-                            <label for="{{ form.confirm_password.id_for_label }}" class="form-label">Confirm password</label>
+                            <label for="{{ form.confirm_password.id_for_label }}" class="form-label">Confirmer le mot de passe</label>
                             {{ form.confirm_password }}
                             {% if form.confirm_password.errors %}
                                 <div class="text-danger small">{{ form.confirm_password.errors|join:", " }}</div>
@@ -51,9 +51,9 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="{{ form.role.id_for_label }}" class="form-label">Role</label>
+                            <label for="{{ form.role.id_for_label }}" class="form-label">Rôle</label>
                             {{ form.role }}
-                            <div class="form-text">Super Admin accounts can only be created via the Django admin.</div>
+                            <div class="form-text">Les comptes Super Admin peuvent uniquement être créés via l'admin Django.</div>
                         </div>
                         <div class="col-md-6">
                             <label for="{{ form.lieu.id_for_label }}" class="form-label">Lieu</label>
@@ -71,14 +71,14 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="{{ form.phone.id_for_label }}" class="form-label">Phone</label>
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">Téléphone</label>
                             {{ form.phone }}
                         </div>
                         <div class="col-md-6 d-flex align-items-end">
                             <div class="form-check">
                                 {{ form.is_active }}
                                 <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
-                                    Active
+                                    Actif
                                 </label>
                             </div>
                         </div>
@@ -86,9 +86,9 @@
 
                     <div class="d-flex gap-2 mt-4">
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-person-plus"></i> Create user
+                            <i class="bi bi-person-plus"></i> Créer l'utilisateur
                         </button>
-                        <a href="{% url 'user_management_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <a href="{% url 'user_management_dashboard' %}" class="btn btn-outline-secondary">Annuler</a>
                     </div>
                 </form>
             </div>
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const serviceSelect = document.getElementById('{{ form.service.id_for_label }}');
 
     function clearServices() {
-        serviceSelect.innerHTML = '<option value="">-- Select service --</option>';
+        serviceSelect.innerHTML = '<option value="">-- Sélectionner un service --</option>';
     }
 
     async function loadServices(lieuId) {

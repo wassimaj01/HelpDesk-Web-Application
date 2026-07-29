@@ -482,3 +482,22 @@ class TicketHistory(models.Model):
 
     def __str__(self):
         return f'{self.ticket.reference} - {self.action}'
+
+
+class TicketMessage(models.Model):
+    """A message exchanged between the ticket creator (employee) and the responsible admin.
+
+    Operators must NOT access these messages.
+    """
+
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='ticket_messages')
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'Message #{self.pk} on {self.ticket.reference} by {self.sender.get_username()}'

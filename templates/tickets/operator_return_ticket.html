@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Return Ticket {{ ticket.reference }} - Operator{% endblock %}
+{% block title %}Retourner le ticket {{ ticket.reference }} - Opérateur{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card shadow-sm">
             <div class="card-header bg-white">
-                <h5 class="mb-0">Return ticket {{ ticket.reference }}</h5>
+                <h5 class="mb-0">Retourner le ticket {{ ticket.reference }}</h5>
             </div>
             <div class="card-body">
-                <p class="text-muted">You are returning this ticket to the responsible admin. Provide a reason explaining why you cannot handle it. The ticket will be set back to <strong>CREATED</strong> and unassigned.</p>
+                <p class="text-muted">Vous renvoyez ce ticket à l'admin responsable. Fournissez un motif expliquant pourquoi vous ne pouvez pas le traiter. Le ticket sera remis à l'état <strong>CREATED</strong> et désassigné.</p>
 
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="reason" class="form-label">Reason (required)</label>
+                        <label for="reason" class="form-label">Motif (obligatoire)</label>
                         <textarea id="reason" name="reason" class="form-control" rows="4" required></textarea>
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-danger">Return ticket</button>
-                        <a href="{% url 'operator_ticket_detail' ticket.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-danger">Retourner le ticket</button>
+                        <a href="{% url 'operator_ticket_detail' ticket.pk %}" class="btn btn-outline-secondary">Annuler</a>
                     </div>
                 </form>
             </div>

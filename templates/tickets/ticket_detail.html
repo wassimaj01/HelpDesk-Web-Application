@@ -6,19 +6,19 @@
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
         <h3 class="mb-0">{{ ticket.reference }}</h3>
-        <div class="text-muted small">Created {{ ticket.created_at|date:"d M Y H:i" }}</div>
+        <div class="text-muted small">Créé le {{ ticket.created_at|date:"d M Y H:i" }}</div>
     </div>
     <div class="d-flex align-items-center gap-2">
         {% include "tickets/_status_badge.html" with status=ticket.status %}
         {% if ticket.status == 'CREATED' %}
         <a href="{% url 'ticket_edit' ticket.pk %}" class="btn btn-outline-primary btn-sm">
-            <i class="bi bi-pencil"></i> Edit
+            <i class="bi bi-pencil"></i> Modifier
         </a>
         <button type="button" class="btn btn-outline-danger btn-sm"
                 data-bs-toggle="modal" data-bs-target="#cancelModal"
                 data-cancel-url="{% url 'ticket_cancel' ticket.pk %}"
                 data-ticket-reference="{{ ticket.reference }}">
-            <i class="bi bi-x-lg"></i> Cancel
+            <i class="bi bi-x-lg"></i> Annuler
         </button>
         {% endif %}
     </div>
@@ -27,35 +27,35 @@
 <div class="row g-3">
     <div class="col-lg-8">
         <div class="card shadow-sm mb-3">
-            <div class="card-header bg-white"><h6 class="mb-0">Ticket information</h6></div>
+            <div class="card-header bg-white"><h6 class="mb-0">Informations du ticket</h6></div>
             <div class="card-body">
                 <dl class="row mb-0">
-                    <dt class="col-sm-4">Problem type</dt>
+                    <dt class="col-sm-4">Type de problème</dt>
                     <dd class="col-sm-8">{{ ticket.problem_type.label }}</dd>
 
-                    <dt class="col-sm-4">Category</dt>
+                    <dt class="col-sm-4">Catégorie</dt>
                     <dd class="col-sm-8">{{ ticket.get_category_display }}</dd>
 
                     <dt class="col-sm-4">Description</dt>
                     <dd class="col-sm-8">{{ ticket.description|default:"—"|linebreaksbr }}</dd>
 
-                    <dt class="col-sm-4">Location / Service</dt>
+                    <dt class="col-sm-4">Lieu / Service</dt>
                     <dd class="col-sm-8">{{ ticket.requester_lieu_service }}</dd>
 
-                    <dt class="col-sm-4">Responsible admin</dt>
+                    <dt class="col-sm-4">Admin responsable</dt>
                     <dd class="col-sm-8">{{ ticket.responsible_admin.get_username }}</dd>
 
-                    <dt class="col-sm-4">Assigned to</dt>
-                    <dd class="col-sm-8">{{ ticket.assigned_to.get_username|default:"Not yet assigned" }}</dd>
+                    <dt class="col-sm-4">Assigné à</dt>
+                    <dd class="col-sm-8">{{ ticket.assigned_to.get_username|default:"Pas encore attribué" }}</dd>
 
-                    <dt class="col-sm-4">Resolved by</dt>
+                    <dt class="col-sm-4">Résolu par</dt>
                     <dd class="col-sm-8">{{ ticket.resolved_by.get_username|default:"—" }}</dd>
                 </dl>
             </div>
         </div>
 
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><h6 class="mb-0">History</h6></div>
+            <div class="card-header bg-white"><h6 class="mb-0">Historique</h6></div>
             <ul class="list-group list-group-flush">
                 {% for entry in ticket.history.all %}
                 <li class="list-group-item">
@@ -63,13 +63,13 @@
                         <span class="fw-semibold">{{ entry.get_action_display }}</span>
                         <span class="text-muted small">{{ entry.created_at|date:"d M Y H:i" }}</span>
                     </div>
-                    <div class="small text-muted">by {{ entry.changed_by.get_username }}</div>
+                    <div class="small text-muted">par {{ entry.changed_by.get_username }}</div>
                     {% if entry.comment %}
                         <div class="small mt-1">{{ entry.comment }}</div>
                     {% endif %}
                 </li>
                 {% empty %}
-                <li class="list-group-item text-muted">No history yet.</li>
+                <li class="list-group-item text-muted">Aucun historique pour le moment.</li>
                 {% endfor %}
             </ul>
         </div>
@@ -77,20 +77,47 @@
 
     <div class="col-lg-4">
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><h6 class="mb-0">Status timeline</h6></div>
+            <div class="card-header bg-white"><h6 class="mb-0">Chronologie du statut</h6></div>
             <div class="card-body">
-                <p class="mb-2"><strong>Created:</strong> {{ ticket.created_at|date:"d M Y H:i" }}</p>
-                <p class="mb-2"><strong>Assigned at:</strong> {{ ticket.assigned_at|date:"d M Y H:i"|default:"—" }}</p>
-                <p class="mb-2"><strong>Resolved at:</strong> {{ ticket.resolved_at|date:"d M Y H:i"|default:"—" }}</p>
-                <p class="mb-0"><strong>Closed at:</strong> {{ ticket.closed_at|date:"d M Y H:i"|default:"—" }}</p>
+                <p class="mb-2"><strong>Créé le :</strong> {{ ticket.created_at|date:"d M Y H:i" }}</p>
+                <p class="mb-2"><strong>Attribué le :</strong> {{ ticket.assigned_at|date:"d M Y H:i"|default:"—" }}</p>
+                <p class="mb-2"><strong>Résolu le :</strong> {{ ticket.resolved_at|date:"d M Y H:i"|default:"—" }}</p>
+                <p class="mb-0"><strong>Fermé le :</strong> {{ ticket.closed_at|date:"d M Y H:i"|default:"—" }}</p>
             </div>
         </div>
-        <a href="{% url 'employee_dashboard' %}" class="btn btn-outline-secondary w-100 mt-3">Back to dashboard</a>
+        <a href="{% url 'employee_dashboard' %}" class="btn btn-outline-secondary w-100 mt-3">Retour au tableau de bord</a>
+
+        <!-- Bloc de discussion : employé uniquement -->
+        <div id="ticket-discussion" class="card shadow-sm w-100 mt-3 discussion-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <strong>Discussion</strong>
+                <button
+                    id="discussion-toggle"
+                    class="btn btn-sm btn-light"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#discussion-body"
+                    aria-expanded="false"
+                    aria-controls="discussion-body"
+                >+</button>
+            </div>
+            <div id="discussion-body" class="collapse discussion-body">
+                <div class="card-body p-2">
+                    <div id="discussion-messages" class="discussion-messages" style="max-height:250px; overflow-y:auto; padding:4px;"></div>
+                    <div class="mt-2">
+                        <textarea id="discussion-input" class="form-control" rows="3" placeholder="Écrire un message..."></textarea>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <small id="discussion-status" class="text-muted"></small>
+                            <button id="discussion-send" class="btn btn-primary btn-sm">Envoyer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 {% include "tickets/_cancel_modal.html" %}
-{% endblock %}
 
 {% block extra_js %}
 <script>
@@ -105,6 +132,143 @@ document.addEventListener('DOMContentLoaded', function () {
             cancelModal.querySelector('#cancelTicketReference').textContent = reference;
         });
     }
+
+    // Discussion JS
+    const ticketId = {{ ticket.pk }};
+
+    // Prevent double initialization if the script runs more than once
+    window.__discussionInitialized = window.__discussionInitialized || {};
+    if (window.__discussionInitialized[`ticket_${ticketId}`]) return;
+    window.__discussionInitialized[`ticket_${ticketId}`] = true;
+
+    const messagesEl = document.getElementById('discussion-messages');
+    const inputEl = document.getElementById('discussion-input');
+    const sendBtn = document.getElementById('discussion-send');
+    const statusEl = document.getElementById('discussion-status');
+    let lastMessageId = 0;
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    function appendMessage(msg) {
+        // Avoid duplicates: check if message element already exists
+        if (document.querySelector(`[data-message-id="${msg.id}"]`)) return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mb-2';
+        wrapper.setAttribute('data-message-id', msg.id);
+        const who = document.createElement('div');
+        who.className = 'small text-muted';
+        who.textContent = msg.sender + ' • ' + msg.created_at;
+        const body = document.createElement('div');
+        body.textContent = msg.message;
+        wrapper.appendChild(who);
+        wrapper.appendChild(body);
+        messagesEl.appendChild(wrapper);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        lastMessageId = Math.max(lastMessageId, msg.id);
+    }
+
+    async function fetchMessages() {
+        try {
+            const res = await fetch(`/tickets/${ticketId}/messages/`, { credentials: 'same-origin' });
+            if (!res.ok) {
+                if (res.status === 403) {
+                    statusEl.textContent = 'Accès à la discussion refusé.';
+                    if (window.__discussionPolling && window.__discussionPolling[ticketId]) {
+                        clearInterval(window.__discussionPolling[ticketId]);
+                    }
+                }
+                return;
+            }
+            const data = await res.json();
+            if (!data.messages) return;
+            // Append only messages not already present
+            for (const m of data.messages) {
+                if (!document.querySelector(`[data-message-id="${m.id}"]`)) appendMessage(m);
+            }
+        } catch (err) {
+            console.error('Error fetching messages', err);
+            statusEl.textContent = 'Impossible de charger les messages.';
+        }
+    }
+
+    // Ensure the send handler is attached only once
+    if (!sendBtn.dataset.listenerAttached) {
+        sendBtn.addEventListener('click', async function (event) {
+            event.preventDefault();
+            const text = (inputEl.value || '').trim();
+            if (!text) {
+                statusEl.textContent = 'Veuillez saisir un message.';
+                return;
+            }
+            sendBtn.disabled = true;
+            statusEl.textContent = 'Envoi en cours...';
+            try {
+                const form = new URLSearchParams();
+                form.append('message', text);
+                const res = await fetch(`/tickets/${ticketId}/messages/send/`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: form.toString(),
+                });
+                const json = await res.json();
+                if (!res.ok) {
+                    statusEl.textContent = json.error || 'Échec de l\'envoi du message.';
+                } else if (json.success) {
+                    // append only if not present
+                    appendMessage(json.message);
+                    inputEl.value = '';
+                    statusEl.textContent = '';
+                }
+            } catch (err) {
+                console.error('Error sending message', err);
+                statusEl.textContent = 'Erreur lors de l\'envoi du message.';
+            } finally {
+                sendBtn.disabled = false;
+            }
+        });
+        sendBtn.dataset.listenerAttached = '1';
+    }
+
+    // Initial load and polling every 3 seconds (only one interval per ticket)
+    window.__discussionPolling = window.__discussionPolling || {};
+    if (!window.__discussionPolling[ticketId]) {
+        fetchMessages();
+        window.__discussionPolling[ticketId] = setInterval(fetchMessages, 3000);
+    }
+
+    // Minimize / expand via Bootstrap collapse
+    const discussionEl = document.getElementById('ticket-discussion');
+    const toggleBtn = document.getElementById('discussion-toggle');
+    const discussionBody = document.getElementById('discussion-body');
+    if (discussionEl && toggleBtn && discussionBody) {
+        discussionBody.addEventListener('shown.bs.collapse', function () {
+            toggleBtn.textContent = '−';
+            toggleBtn.setAttribute('aria-expanded', 'true');
+        });
+        discussionBody.addEventListener('hidden.bs.collapse', function () {
+            toggleBtn.textContent = '+';
+            toggleBtn.setAttribute('aria-expanded', 'false');
+        });
+    }
+
 });
 </script>
+{% endblock %}
 {% endblock %}

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}IT Admin Dashboard - GPI Ticketing{% endblock %}
+{% block title %}Tableau de bord admin IT - GPI Ticketing{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="mb-0">Tickets Routed To Me</h3>
+    <h3 class="mb-0">Tickets qui me sont attribués</h3>
 </div>
 
 <div class="row g-3 mb-4">
@@ -19,7 +19,7 @@
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card text-center shadow-sm h-100 border-primary">
             <div class="card-body">
-                <div class="text-muted small text-uppercase">Created</div>
+                <div class="text-muted small text-uppercase">Créés</div>
                 <div class="fs-3 fw-bold text-primary">{{ stats.created }}</div>
             </div>
         </div>
@@ -27,7 +27,7 @@
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card text-center shadow-sm h-100 border-warning">
             <div class="card-body">
-                <div class="text-muted small text-uppercase">Assigned</div>
+                <div class="text-muted small text-uppercase">Attribués</div>
                 <div class="fs-3 fw-bold text-warning">{{ stats.assigned }}</div>
             </div>
         </div>
@@ -35,7 +35,7 @@
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card text-center shadow-sm h-100 border-info">
             <div class="card-body">
-                <div class="text-muted small text-uppercase">Resolved (pending)</div>
+                <div class="text-muted small text-uppercase">Résolus (en attente)</div>
                 <div class="fs-3 fw-bold text-info">{{ stats.resolved }}</div>
             </div>
         </div>
@@ -43,7 +43,7 @@
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card text-center shadow-sm h-100 border-success">
             <div class="card-body">
-                <div class="text-muted small text-uppercase">Closed</div>
+                <div class="text-muted small text-uppercase">Fermés</div>
                 <div class="fs-3 fw-bold text-success">{{ stats.closed }}</div>
             </div>
         </div>
@@ -55,15 +55,15 @@
         <div class="row g-2 align-items-center">
             <div class="col-md-6">
                 <input type="text" id="ticketSearch" class="form-control"
-                       placeholder="Search by reference, employee or problem type...">
+                       placeholder="Rechercher par référence, employé ou type de problème...">
             </div>
             <div class="col-md-4">
                 <select id="statusFilter" class="form-select">
-                    <option value="">All statuses</option>
-                    <option value="CREATED">Created</option>
-                    <option value="ASSIGNED">Assigned</option>
-                    <option value="RESOLVED">Resolved</option>
-                    <option value="CLOSED">Closed</option>
+                    <option value="">Tous les statuts</option>
+                    <option value="CREATED">Créé</option>
+                    <option value="ASSIGNED">Attribué</option>
+                    <option value="RESOLVED">Résolu</option>
+                    <option value="CLOSED">Fermé</option>
                 </select>
             </div>
             <div class="col-md-2 text-md-end">
@@ -76,12 +76,12 @@
             <thead class="table-light">
                 <tr>
                     <th>Reference</th>
-                    <th>Employee</th>
-                    <th>Problem type</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Assigned operator</th>
-                    <th>Created</th>
+                    <th>Employé</th>
+                    <th>Type de problème</th>
+                    <th>Catégorie</th>
+                    <th>Statut</th>
+                    <th>Opérateur assigné</th>
+                    <th>Créé le</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -101,31 +101,31 @@
                     <td>{{ ticket.assigned_to.get_username|default:"—" }}</td>
                     <td>{{ ticket.created_at|date:"d M Y H:i" }}</td>
                     <td class="text-end">
-                        <a href="{% url 'it_admin_ticket_detail' ticket.pk %}" class="btn btn-sm btn-outline-secondary" title="View">
+                        <a href="{% url 'it_admin_ticket_detail' ticket.pk %}" class="btn btn-sm btn-outline-secondary" title="Voir">
                             <i class="bi bi-eye"></i>
                         </a>
                         {% if ticket.status == 'CREATED' %}
-                        <a href="{% url 'it_admin_assign_ticket' ticket.pk %}" class="btn btn-sm btn-outline-primary" title="Assign">
-                            <i class="bi bi-person-check"></i> Assign
+                        <a href="{% url 'it_admin_assign_ticket' ticket.pk %}" class="btn btn-sm btn-outline-primary" title="Attribuer">
+                            <i class="bi bi-person-check"></i> Attribuer
                         </a>
                         {% elif ticket.status == 'ASSIGNED' %}
-                        <a href="{% url 'it_admin_assign_ticket' ticket.pk %}" class="btn btn-sm btn-outline-warning" title="Reassign">
-                            <i class="bi bi-arrow-repeat"></i> Reassign
+                        <a href="{% url 'it_admin_assign_ticket' ticket.pk %}" class="btn btn-sm btn-outline-warning" title="Réattribuer">
+                            <i class="bi bi-arrow-repeat"></i> Réattribuer
                         </a>
                         {% elif ticket.status == 'RESOLVED' %}
-                        <a href="{% url 'it_admin_validate_resolution' ticket.pk %}" class="btn btn-sm btn-outline-info" title="Validate">
-                            <i class="bi bi-check2-square"></i> Validate
+                        <a href="{% url 'it_admin_validate_resolution' ticket.pk %}" class="btn btn-sm btn-outline-info" title="Valider">
+                            <i class="bi bi-check2-square"></i> Valider
                         </a>
                         {% endif %}
-                        <a href="{% url 'it_admin_delete_ticket' ticket.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
-                            <i class="bi bi-trash"></i> Delete
+                        <a href="{% url 'it_admin_delete_ticket' ticket.pk %}" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                            <i class="bi bi-trash"></i> Supprimer
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
                     <td colspan="8" class="text-center text-muted py-4">
-                        No tickets have been routed to you yet.
+                        Aucun ticket ne vous a encore été attribué.
                     </td>
                 </tr>
                 {% endfor %}

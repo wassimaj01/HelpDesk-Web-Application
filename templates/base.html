@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,40 +22,40 @@
                 <ul class="navbar-nav me-auto">
                     {% if is_it_admin_user %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'it_admin_dashboard' %}">Admin dashboard</a>
+                            <a class="nav-link" href="{% url 'it_admin_dashboard' %}">Tableau de bord admin</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'user_management_dashboard' %}">User management</a>
+                            <a class="nav-link" href="{% url 'user_management_dashboard' %}">Utilisateurs</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'user_import_csv' %}">Import users</a>
+                            <a class="nav-link" href="{% url 'lieu_list' %}">Lieux</a>
                         </li>
                     {% elif is_it_operator_user %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'operator_dashboard' %}">My assigned tickets</a>
+                            <a class="nav-link" href="{% url 'operator_dashboard' %}">Mes tickets attribués</a>
                         </li>
                     {% elif is_employee_user %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'employee_dashboard' %}">My tickets</a>
+                            <a class="nav-link" href="{% url 'employee_dashboard' %}">Mes tickets</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'ticket_create' %}">Create ticket</a>
+                            <a class="nav-link" href="{% url 'ticket_create' %}">Créer un ticket</a>
                         </li>
                     {% endif %}
                     {% if user.is_superuser %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/admin/">Django admin</a>
+                            <a class="nav-link" href="/admin/">Admin Django</a>
                         </li>
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav ms-auto align-items-lg-center">
                     <li class="nav-item me-lg-3 text-light small">
-                        Signed in as <strong>{{ user.get_username }}</strong>
+                        Connecté en tant que <strong>{{ user.get_username }}</strong>
                     </li>
                     <li class="nav-item">
                         <form method="post" action="{% url 'logout' %}" class="d-inline">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                            <button type="submit" class="btn btn-outline-light btn-sm">Déconnexion</button>
                         </form>
                     </li>
                 </ul>

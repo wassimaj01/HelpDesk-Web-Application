@@ -1,22 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}User Management - GPI Ticketing{% endblock %}
+{% block title %}Utilisateurs - GPI Ticketing{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-    <h3 class="mb-0">User Management</h3>
+    <h3 class="mb-0">Utilisateurs</h3>
     <div class="d-flex gap-2">
         <a href="{% url 'user_import_csv' %}" class="btn btn-outline-primary">
-            <i class="bi bi-upload"></i> Import CSV
+            <i class="bi bi-upload"></i> Importer CSV
         </a>
         <a href="{% url 'user_create' %}" class="btn btn-primary">
-            <i class="bi bi-person-plus"></i> New User
-        </a>
-        <a href="{% url 'lieu_list' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-geo-alt"></i> Lieux
-        </a>
-        <a href="{% url 'lieu_create' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-plus-circle"></i> Create Lieu
+            <i class="bi bi-person-plus"></i> Nouvel utilisateur
         </a>
     </div>
 </div>
@@ -33,7 +27,7 @@
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card text-center shadow-sm h-100 border-primary">
             <div class="card-body">
-                <div class="text-muted small text-uppercase">Employees</div>
+                <div class="text-muted small text-uppercase">Employés</div>
                 <div class="fs-3 fw-bold text-primary">{{ stats.employees }}</div>
             </div>
         </div>
@@ -41,7 +35,7 @@
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card text-center shadow-sm h-100 border-warning">
             <div class="card-body">
-                <div class="text-muted small text-uppercase">IT Admins</div>
+                <div class="text-muted small text-uppercase">Admins IT</div>
                 <div class="fs-3 fw-bold text-warning">{{ stats.it_admins }}</div>
             </div>
         </div>
@@ -49,7 +43,7 @@
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card text-center shadow-sm h-100 border-info">
             <div class="card-body">
-                <div class="text-muted small text-uppercase">IT Operators</div>
+                <div class="text-muted small text-uppercase">Opérateurs IT</div>
                 <div class="fs-3 fw-bold text-info">{{ stats.it_operators }}</div>
             </div>
         </div>
@@ -57,7 +51,7 @@
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card text-center shadow-sm h-100 border-success">
             <div class="card-body">
-                <div class="text-muted small text-uppercase">Active</div>
+                <div class="text-muted small text-uppercase">Actifs</div>
                 <div class="fs-3 fw-bold text-success">{{ stats.active }}</div>
             </div>
         </div>
@@ -65,7 +59,7 @@
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card text-center shadow-sm h-100 border-secondary">
             <div class="card-body">
-                <div class="text-muted small text-uppercase">Inactive</div>
+                <div class="text-muted small text-uppercase">Inactifs</div>
                 <div class="fs-3 fw-bold text-secondary">{{ stats.inactive }}</div>
             </div>
         </div>
@@ -77,19 +71,19 @@
         <div class="row g-2 align-items-center">
             <div class="col-md-6">
                 <input type="text" id="userSearch" class="form-control"
-                       placeholder="Search by username, name or email...">
+                       placeholder="Rechercher par nom d'utilisateur, nom ou e-mail...">
             </div>
             <div class="col-md-4">
                 <select id="roleFilter" class="form-select">
-                    <option value="">All roles</option>
-                    <option value="Employee">Employee</option>
-                    <option value="IT_Admin">IT Admin</option>
-                    <option value="IT_Operator">IT Operator</option>
+                    <option value="">Tous les rôles</option>
+                    <option value="Employee">Employé</option>
+                    <option value="IT_Admin">Admin IT</option>
+                    <option value="IT_Operator">Opérateur IT</option>
                     <option value="Super_Admin">Super Admin</option>
                 </select>
             </div>
             <div class="col-md-2 text-md-end">
-                <span class="text-muted small" id="userCount">{{ users|length }} user(s)</span>
+                <span class="text-muted small" id="userCount">{{ users|length }} utilisateur(s)</span>
             </div>
         </div>
     </div>
@@ -97,11 +91,11 @@
         <table class="table table-hover align-middle mb-0" id="usersTable">
             <thead class="table-light">
                 <tr>
-                    <th>Username</th>
-                    <th>Full name</th>
-                    <th>Role</th>
-                    <th>Location / Service</th>
-                    <th>Status</th>
+                    <th>Nom d'utilisateur</th>
+                    <th>Nom complet</th>
+                    <th>Rôle</th>
+                    <th>Lieu / Service</th>
+                    <th>Statut</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -119,34 +113,34 @@
                         {% if target_user.role_label == 'Super_Admin' %}
                             <span class="badge bg-dark">Super Admin</span>
                         {% elif target_user.role_label == 'IT_Admin' %}
-                            <span class="badge bg-warning text-dark">IT Admin</span>
+                            <span class="badge bg-warning text-dark">Admin IT</span>
                         {% elif target_user.role_label == 'IT_Operator' %}
-                            <span class="badge bg-info text-dark">IT Operator</span>
+                            <span class="badge bg-info text-dark">Opérateur IT</span>
                         {% elif target_user.role_label == 'Employee' %}
-                            <span class="badge bg-primary">Employee</span>
+                            <span class="badge bg-primary">Employé</span>
                         {% else %}
-                            <span class="badge bg-secondary">No role</span>
+                            <span class="badge bg-secondary">Aucun rôle</span>
                         {% endif %}
                     </td>
                     <td>{{ target_user.profile.lieu_service|default:"—" }}</td>
                     <td>
                         {% if target_user.is_active %}
-                            <span class="badge bg-success">Active</span>
+                            <span class="badge bg-success">Actif</span>
                         {% else %}
-                            <span class="badge bg-secondary">Inactive</span>
+                            <span class="badge bg-secondary">Inactif</span>
                         {% endif %}
                     </td>
                     <td class="text-end">
-                        <a href="{% url 'user_detail' target_user.pk %}" class="btn btn-sm btn-outline-secondary" title="View">
+                        <a href="{% url 'user_detail' target_user.pk %}" class="btn btn-sm btn-outline-secondary" title="Voir">
                             <i class="bi bi-eye"></i>
                         </a>
                         {% if not target_user.is_superuser %}
-                        <a href="{% url 'user_update' target_user.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                        <a href="{% url 'user_update' target_user.pk %}" class="btn btn-sm btn-outline-primary" title="Modifier">
                             <i class="bi bi-pencil"></i>
                         </a>
                         <button type="button"
                                 class="btn btn-sm {% if target_user.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}"
-                                title="{% if target_user.is_active %}Deactivate{% else %}Reactivate{% endif %}"
+                                title="{% if target_user.is_active %}Désactiver{% else %}Réactiver{% endif %}"
                                 data-bs-toggle="modal" data-bs-target="#deactivateModal"
                                 data-deactivate-url="{% url 'user_deactivate' target_user.pk %}"
                                 data-username="{{ target_user.username }}"
@@ -158,7 +152,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center text-muted py-4">No users found.</td>
+                    <td colspan="6" class="text-center text-muted py-4">Aucun utilisateur trouvé.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -190,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (show) visible += 1;
         });
 
-        userCount.textContent = visible + ' user(s)';
+        userCount.textContent = visible + ' utilisateur(s)';
     }
 
     searchInput.addEventListener('input', applyFilters);
@@ -207,12 +201,12 @@ document.addEventListener('DOMContentLoaded', function () {
             deactivateModal.querySelector('#deactivateForm').setAttribute('action', url);
             deactivateModal.querySelector('#deactivateUsername').textContent = username;
             deactivateModal.querySelector('#deactivateModalTitle').textContent =
-                isActive ? 'Deactivate user' : 'Reactivate user';
+                isActive ? 'Désactiver l\'utilisateur' : 'Réactiver l\'utilisateur';
             deactivateModal.querySelector('#deactivateModalBody').textContent = isActive
-                ? 'This user will no longer be able to sign in. This does not delete their data.'
-                : 'This user will be able to sign in again.';
+                ? 'Cet utilisateur ne pourra plus se connecter. Ses données ne seront pas supprimées.'
+                : 'Cet utilisateur pourra de nouveau se connecter.';
             deactivateModal.querySelector('#deactivateConfirmBtn').textContent =
-                isActive ? 'Yes, deactivate' : 'Yes, reactivate';
+                isActive ? 'Oui, désactiver' : 'Oui, réactiver';
             deactivateModal.querySelector('#deactivateConfirmBtn').className =
                 'btn ' + (isActive ? 'btn-danger' : 'btn-success');
         });

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Import Result - GPI Ticketing{% endblock %}
+{% block title %}Résultat de l'import - GPI Ticketing{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card shadow-sm">
             <div class="card-header bg-white">
-                <h5 class="mb-0">Import result</h5>
+                <h5 class="mb-0">Résultat de l'import</h5>
             </div>
             <div class="card-body">
                 {% if results.fatal_error %}
@@ -17,7 +17,7 @@
                         <div class="col-6">
                             <div class="card text-center shadow-sm border-success">
                                 <div class="card-body">
-                                    <div class="text-muted small text-uppercase">Created</div>
+                                    <div class="text-muted small text-uppercase">Créés</div>
                                     <div class="fs-3 fw-bold text-success">{{ results.created_count }}</div>
                                 </div>
                             </div>
@@ -25,7 +25,7 @@
                         <div class="col-6">
                             <div class="card text-center shadow-sm border-warning">
                                 <div class="card-body">
-                                    <div class="text-muted small text-uppercase">Skipped</div>
+                                    <div class="text-muted small text-uppercase">Ignorés</div>
                                     <div class="fs-3 fw-bold text-warning">{{ results.skipped_count }}</div>
                                 </div>
                             </div>
@@ -33,7 +33,7 @@
                     </div>
 
                     {% if results.created %}
-                    <h6>Created users</h6>
+                    <h6>Utilisateurs créés</h6>
                     <ul class="list-group list-group-flush mb-4">
                         {% for username in results.created %}
                         <li class="list-group-item py-1">
@@ -44,7 +44,7 @@
                     {% endif %}
 
                     {% if results.skipped %}
-                    <h6>Skipped rows</h6>
+                    <h6>Lignes ignorées</h6>
                     <ul class="list-group list-group-flush mb-4">
                         {% for item in results.skipped %}
                         <li class="list-group-item py-1">
@@ -57,8 +57,8 @@
                 {% endif %}
 
                 <div class="d-flex gap-2 mt-3">
-                    <a href="{% url 'user_import_csv' %}" class="btn btn-outline-primary">Import another file</a>
-                    <a href="{% url 'user_management_dashboard' %}" class="btn btn-primary">Go to user management</a>
+                    <a href="{% url 'user_import_csv' %}" class="btn btn-outline-primary">Importer un autre fichier</a>
+                    <a href="{% url 'user_management_dashboard' %}" class="btn btn-primary">Aller à la gestion des utilisateurs</a>
                 </div>
             </div>
         </div>

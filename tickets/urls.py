@@ -54,4 +54,7 @@ urlpatterns = [
        name='operator_return_ticket',
     ),
 
+    # Ticket messages (AJAX)
+    path('tickets/<int:ticket_id>/messages/', views.ticket_messages, name='ticket_messages'),
+    path('tickets/<int:ticket_id>/messages/send/', views.ticket_send_message, name='ticket_send_message'),
 ]

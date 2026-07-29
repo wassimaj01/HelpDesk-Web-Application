@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Import Users - GPI Ticketing{% endblock %}
+{% block title %}Importer des utilisateurs - GPI Ticketing{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-7">
         <div class="card shadow-sm">
             <div class="card-header bg-white">
-                <h5 class="mb-0">Import users from CSV</h5>
+                <h5 class="mb-0">Importer des utilisateurs depuis un CSV</h5>
             </div>
             <div class="card-body">
                 <p class="text-muted small">
-                    Upload a CSV file with a header row and the following columns:
+                    Importez un fichier CSV avec une ligne d'en-tête et les colonnes suivantes :
                 </p>
                 <pre class="bg-light p-2 small rounded">username,first_name,last_name,email,password,role,lieu,service,phone,is_active</pre>
                 <p class="text-muted small">
-                    Example row:
+                    Exemple de ligne :
                 </p>
                 <pre class="bg-light p-2 small rounded">employee2,Ahmed,Bennani,ahmed@example.com,password123,Employee,Agence Casablanca,Adhésion,0600000000,True</pre>
                 <ul class="text-muted small">
-                    <li><code>role</code> must be one of: Employee, IT_Admin, IT_Operator.</li>
-                    <li><code>lieu</code> and <code>service</code> must match an existing Lieu/Service combination.</li>
-                    <li>Rows with an existing username or email are skipped and reported.</li>
+                    <li><code>role</code> doit être l'un des suivants : Employee, IT_Admin, IT_Operator.</li>
+                    <li><code>lieu</code> et <code>service</code> doivent correspondre à une combinaison Lieu/Service existante.</li>
+                    <li>Les lignes dont le nom d'utilisateur ou l'e-mail existe déjà sont ignorées et signalées.</li>
                 </ul>
 
                 <form method="post" enctype="multipart/form-data" novalidate>
@@ -36,9 +36,9 @@
                     </div>
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-upload"></i> Upload and import
+                            <i class="bi bi-upload"></i> Importer
                         </button>
-                        <a href="{% url 'user_management_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <a href="{% url 'user_management_dashboard' %}" class="btn btn-outline-secondary">Annuler</a>
                     </div>
                 </form>
             </div>

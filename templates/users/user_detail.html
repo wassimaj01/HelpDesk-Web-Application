@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ target_user.username }} - User Detail{% endblock %}
+{% block title %}{{ target_user.username }} - Détail utilisateur{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -8,17 +8,17 @@
         <h3 class="mb-0">{{ target_user.username }}</h3>
         <div class="text-muted small">
             {% if target_user.is_active %}
-                <span class="badge bg-success">Active</span>
+                <span class="badge bg-success">Actif</span>
             {% else %}
-                <span class="badge bg-secondary">Inactive</span>
+                <span class="badge bg-secondary">Inactif</span>
             {% endif %}
-            Joined {{ target_user.date_joined|date:"d M Y H:i" }}
+            Inscrit le {{ target_user.date_joined|date:"d M Y H:i" }}
         </div>
     </div>
     <div class="d-flex align-items-center gap-2">
         {% if not target_user.is_superuser %}
         <a href="{% url 'user_update' target_user.pk %}" class="btn btn-outline-primary btn-sm">
-            <i class="bi bi-pencil"></i> Edit
+            <i class="bi bi-pencil"></i> Modifier
         </a>
         <button type="button"
                 class="btn btn-sm {% if target_user.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}"
@@ -27,13 +27,13 @@
                 data-username="{{ target_user.username }}"
                 data-active="{{ target_user.is_active|yesno:'true,false' }}">
             {% if target_user.is_active %}
-                <i class="bi bi-person-dash"></i> Deactivate
+                <i class="bi bi-person-dash"></i> Désactiver
             {% else %}
-                <i class="bi bi-person-check"></i> Reactivate
+                <i class="bi bi-person-check"></i> Réactiver
             {% endif %}
         </button>
         {% else %}
-        <span class="badge bg-dark">Managed via Django admin</span>
+        <span class="badge bg-dark">Géré via l'admin Django</span>
         {% endif %}
     </div>
 </div>
@@ -41,28 +41,28 @@
 <div class="row g-3">
     <div class="col-lg-8">
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><h6 class="mb-0">User information</h6></div>
+            <div class="card-header bg-white"><h6 class="mb-0">Informations utilisateur</h6></div>
             <div class="card-body">
                 <dl class="row mb-0">
-                    <dt class="col-sm-4">Full name</dt>
+                    <dt class="col-sm-4">Nom complet</dt>
                     <dd class="col-sm-8">{{ target_user.get_full_name|default:"—" }}</dd>
 
-                    <dt class="col-sm-4">Email</dt>
+                    <dt class="col-sm-4">E-mail</dt>
                     <dd class="col-sm-8">{{ target_user.email|default:"—" }}</dd>
 
-                    <dt class="col-sm-4">Role</dt>
+                    <dt class="col-sm-4">Rôle</dt>
                     <dd class="col-sm-8">{{ role_label|default:"No role assigned" }}</dd>
 
-                    <dt class="col-sm-4">Location / Service</dt>
+                    <dt class="col-sm-4">Lieu / Service</dt>
                     <dd class="col-sm-8">{{ profile.lieu_service|default:"—" }}</dd>
 
-                    <dt class="col-sm-4">Phone</dt>
+                    <dt class="col-sm-4">Téléphone</dt>
                     <dd class="col-sm-8">{{ profile.phone|default:"—" }}</dd>
 
-                    <dt class="col-sm-4">Superuser</dt>
+                    <dt class="col-sm-4">Superutilisateur</dt>
                     <dd class="col-sm-8">{{ target_user.is_superuser|yesno:"Yes,No" }}</dd>
 
-                    <dt class="col-sm-4">Staff</dt>
+                    <dt class="col-sm-4">Personnel</dt>
                     <dd class="col-sm-8">{{ target_user.is_staff|yesno:"Yes,No" }}</dd>
                 </dl>
             </div>
@@ -71,7 +71,7 @@
 
     <div class="col-lg-4">
         <a href="{% url 'user_management_dashboard' %}" class="btn btn-outline-secondary w-100">
-            Back to user management
+            Retour à la gestion des utilisateurs
         </a>
     </div>
 </div>
@@ -93,12 +93,12 @@ document.addEventListener('DOMContentLoaded', function () {
             deactivateModal.querySelector('#deactivateForm').setAttribute('action', url);
             deactivateModal.querySelector('#deactivateUsername').textContent = username;
             deactivateModal.querySelector('#deactivateModalTitle').textContent =
-                isActive ? 'Deactivate user' : 'Reactivate user';
+                isActive ? 'Désactiver l\'utilisateur' : 'Réactiver l\'utilisateur';
             deactivateModal.querySelector('#deactivateModalBody').textContent = isActive
-                ? 'This user will no longer be able to sign in. This does not delete their data.'
-                : 'This user will be able to sign in again.';
+                ? 'Cet utilisateur ne pourra plus se connecter. Ses données ne seront pas supprimées.'
+                : 'Cet utilisateur pourra de nouveau se connecter.';
             deactivateModal.querySelector('#deactivateConfirmBtn').textContent =
-                isActive ? 'Yes, deactivate' : 'Yes, reactivate';
+                isActive ? 'Oui, désactiver' : 'Oui, réactiver';
             deactivateModal.querySelector('#deactivateConfirmBtn').className =
                 'btn ' + (isActive ? 'btn-danger' : 'btn-success');
         });

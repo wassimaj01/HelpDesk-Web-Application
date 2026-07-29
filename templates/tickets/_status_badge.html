@@ -8,5 +8,5 @@ Usage: {% include "tickets/_status_badge.html" with status=ticket.status %}
     {% elif status == 'CLOSED' %}bg-success
     {% elif status == 'CANCELLED' %}bg-secondary
     {% else %}bg-light text-dark{% endif %}">
-    {{ status }}
+    {% if status == 'CREATED' %}Créé{% elif status == 'ASSIGNED' %}Attribué{% elif status == 'RESOLVED' %}Résolu{% elif status == 'CLOSED' %}Fermé{% elif status == 'CANCELLED' %}Annulé{% else %}{{ status }}{% endif %}
 </span>

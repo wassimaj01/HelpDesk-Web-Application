@@ -11,23 +11,23 @@ data attributes:
             <form id="cancelForm" method="post" action="">
                 {% csrf_token %}
                 <div class="modal-header">
-                    <h5 class="modal-title">Cancel ticket</h5>
+                    <h5 class="modal-title">Annuler le ticket</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to cancel ticket <strong id="cancelTicketReference"></strong>?</p>
+                    <p>Voulez-vous vraiment annuler le ticket <strong id="cancelTicketReference"></strong> ?</p>
                     <p class="text-muted small">
-                        This action cannot be undone through the employee interface. The ticket
-                        will be marked as <strong>CANCELLED</strong> and kept in your history.
+                        Cette action ne peut pas être annulée depuis l'interface employé. Le ticket
+                        sera marqué comme <strong>ANNULÉ</strong> et conservé dans l'historique.
                     </p>
                     <div class="mb-2">
-                        <label for="cancelReason" class="form-label">Reason (optional)</label>
+                        <label for="cancelReason" class="form-label">Motif (facultatif)</label>
                         <textarea name="reason" id="cancelReason" class="form-control" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-danger">Yes, cancel ticket</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-danger">Oui, annuler le ticket</button>
                 </div>
             </form>
         </div>

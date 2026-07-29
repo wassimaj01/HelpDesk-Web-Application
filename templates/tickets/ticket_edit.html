@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}Edit Ticket {{ ticket.reference }} - GPI Ticketing{% endblock %}
+{% block title %}Modifier le ticket {{ ticket.reference }} - GPI Ticketing{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Edit ticket {{ ticket.reference }}</h5>
+                <h5 class="mb-0">Modifier le ticket {{ ticket.reference }}</h5>
                 {% include "tickets/_status_badge.html" with status=ticket.status %}
             </div>
             <div class="card-body">
                 <dl class="row small text-muted mb-4">
-                    <dt class="col-sm-4">Problem type</dt>
+                    <dt class="col-sm-4">Type de problème</dt>
                     <dd class="col-sm-8">{{ ticket.problem_type.label }}</dd>
-                    <dt class="col-sm-4">Responsible admin</dt>
+                    <dt class="col-sm-4">Admin responsable</dt>
                     <dd class="col-sm-8">{{ ticket.responsible_admin.get_username }}</dd>
                 </dl>
                 <p class="text-muted small">
-                    Only the description can be modified. The problem type, category,
-                    responsible admin and status cannot be changed here.
+                    Seule la description peut être modifiée. Le type de problème, la catégorie,
+                    l'admin responsable et le statut ne peuvent pas être modifiés ici.
                 </p>
                 <form method="post" novalidate>
                     {% csrf_token %}
@@ -33,8 +33,8 @@
                         {% endif %}
                     </div>
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="{% url 'ticket_detail' ticket.pk %}" class="btn btn-outline-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <a href="{% url 'ticket_detail' ticket.pk %}" class="btn btn-outline-secondary">Annuler</a>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
                     </div>
                 </form>
             </div>

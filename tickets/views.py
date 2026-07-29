@@ -2,9 +2,10 @@ from django.contrib import messages
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_http_methods
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods, require_GET, require_POST
 
 from .forms import (
     AssignTicketForm,
@@ -13,7 +14,7 @@ from .forms import (
     TicketEditForm,
     ValidateResolutionForm,
 )
-from .models import Ticket
+from .models import Ticket, TicketMessage
 from .permissions import is_employee, is_it_admin, is_it_operator, role_required
 
 
@@ -457,4 +458,65 @@ def operator_return_ticket(request, ticket_id):
         return redirect('operator_dashboard')
 
     return render(request, 'tickets/operator_return_ticket.html', {'ticket': ticket})
+
+
+# ----------------------------------------------------------------------
+# Ticket discussion (AJAX endpoints)
+# ----------------------------------------------------------------------
+
+
+@login_required
+@require_GET
+def ticket_messages(request, ticket_id):
+    """Return JSON list of messages for a ticket.
+
+    Only the ticket creator (employee) and the responsible admin can access.
+    Operators are not allowed.
+    """
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+
+    # Permission check: only created_by or responsible_admin
+    if not (request.user.pk == ticket.created_by_id or request.user.pk == ticket.responsible_admin_id):
+        return JsonResponse({'error': 'Forbidden'}, status=403)
+
+    messages_qs = ticket.messages.select_related('sender').order_by('created_at')
+    data = []
+    for m in messages_qs:
+        data.append(
+            {
+                'id': m.id,
+                'sender': m.sender.get_username(),
+                'message': m.message,
+                'created_at': m.created_at.strftime('%Y-%m-%d %H:%M'),
+            }
+        )
+    return JsonResponse({'messages': data})
+
+
+@login_required
+@require_POST
+def ticket_send_message(request, ticket_id):
+    """Accept a new message for the ticket via POST (message=...).
+
+    Security rules same as ticket_messages.
+    """
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+
+    if not (request.user.pk == ticket.created_by_id or request.user.pk == ticket.responsible_admin_id):
+        return JsonResponse({'error': 'Forbidden'}, status=403)
+
+    text = (request.POST.get('message') or '').strip()
+    if not text:
+        return JsonResponse({'error': 'Empty message'}, status=400)
+
+    msg = TicketMessage.objects.create(ticket=ticket, sender=request.user, message=text)
+
+    # Return the created message
+    data = {
+        'id': msg.id,
+        'sender': msg.sender.get_username(),
+        'message': msg.message,
+        'created_at': msg.created_at.strftime('%Y-%m-%d %H:%M'),
+    }
+    return JsonResponse({'success': True, 'message': data})
 
